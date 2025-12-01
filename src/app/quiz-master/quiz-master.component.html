@@ -83,25 +83,25 @@
           <h3 class="font-semibold text-base">Leaderboard</h3>
           <button class="btn-secondary mb-2" (click)="downloadCsv()">Download CSV</button>
 
-          <table class="w-full text-sm border-collapse">
+          <table class="table w-full text-sm border-collapse">
             <thead>
               <tr>
-                <th class="th">Rank</th>
+                <th class="th text-left">Rank</th>
                 <th class="th text-left">Participant</th>
-                <th class="th">Score</th>
-                <th class="th">Correct</th>
+                <th class="th text-center">Score</th>
+                <th class="th text-center">Correct</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let p of leaderboard; index as i" [class.top1]="i === 0" [class.top2]="i === 1"
                 [class.top3]="i === 2">
-                <td class="td text-center">
+                <td class="td text-left">
                   <span *ngIf="i === 0">🥇</span>
                   <span *ngIf="i === 1">🥈</span>
                   <span *ngIf="i === 2">🥉</span>
                   <span *ngIf="i > 2">{{ i + 1 }}</span>
                 </td>
-                <td class="td">{{ p.name }}</td>
+                <td class="td text-left">{{ p.name }}</td>
                 <td class="td text-center">{{ p.score }}</td>
                 <td class="td text-center">{{ p.correctCount }}/10</td>
               </tr>

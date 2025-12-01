@@ -9,19 +9,16 @@ import { RouterOutlet } from '@angular/router';
     <div class="min-h-screen flex flex-col">
       <header class="border-b border-[var(--border)] bg-[var(--card-bg)]">
         <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div class="font-semibold text-lg text-[var(--text-main)]">
-            AI Quiz Arena
-          </div>
-          <nav class="text-sm text-[var(--text-muted)]">
-            <a routerLink="/" class="hover:underline">Quiz Master</a>
-          </nav>
+          <h1 class="font-semibold text-lg text-[var(--text-main)]">
+            Quiz Master
+          </h1>
         </div>
       </header>
       <main class="flex-1">
         <router-outlet></router-outlet>
       </main>
       <footer class="border-t border-[var(--border)] text-center text-xs text-[var(--text-muted)] py-3 bg-[var(--card-bg)]">
-        AI Quiz App &middot; Demo implementation
+        AI Quiz App © 2025
       </footer>
     </div>
   `,
