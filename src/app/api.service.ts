@@ -32,9 +32,9 @@ export class ApiService {
     return this.http.post<Participant>(`${this.baseUrl}/sessions/${sessionId}/participants`, { name });
   }
 
-  submitAnswer(sessionId: string, participantId: string, selectedOptionIndex: number) {
+  submitAnswer(sessionId: string, participantId: string, selectedOptionIndex: number, qIndex: number) {
     return this.http.post<{ isCorrect: boolean; score: number }>(
-      `${this.baseUrl}/sessions/${sessionId}/participants/${participantId}/answers`,
+      `${this.baseUrl}/sessions/${sessionId}/participants/${participantId}/answers/${qIndex}`,
       { selectedOptionIndex }
     );
   }

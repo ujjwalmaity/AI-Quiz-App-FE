@@ -38,15 +38,8 @@
         <div *ngIf="session.status === 'IN_PROGRESS' && currentQuestion" class="space-y-3">
           <div class="flex items-center justify-between mb-1">
             <div class="text-sm font-medium">
-              Question {{ session.currentQuestionIndex + 1 }} of {{ session.questions.length }}
+              Question {{ currentQuestionIndex + 1 }} of {{ session.questions.length }}
             </div>
-            <div class="text-xs text-[var(--text-muted)]">
-              Time left: {{ remainingSeconds }}s
-            </div>
-          </div>
-
-          <div class="timer-bar">
-            <div class="timer-bar-fill" [style.width.%]="progressPercent"></div>
           </div>
 
           <div class="text-sm uppercase tracking-wide text-[var(--text-muted)]">
@@ -61,15 +54,16 @@
           </div>
 
           <div class="space-y-2" *ngIf="!hasAnsweredCurrentQuestion()">
-            <button *ngFor="let opt of currentQuestion.options; index as i" class="answer-btn w-full"
+            <button *ngFor="let opt of currentQuestion.options; index as i" class="answer-btn w-full mt-1"
               (click)="submitAnswer(i)" [disabled]="!canAnswer() || submitting">
               {{ opt }}
             </button>
-
-            <div *ngIf="remainingSeconds === 0" class="text-xs text-[var(--text-muted)]">
-              Time is up for this question. Wait for the quiz master to move on.
-            </div>
           </div>
+
+          <button class="btn-secondary mt-2" (click)="nextQuestion()"
+            *ngIf="!(currentQuestionIndex === session.questions.length - 1)">
+            Next Question
+          </button>
         </div>
 
         <!-- Finished -->

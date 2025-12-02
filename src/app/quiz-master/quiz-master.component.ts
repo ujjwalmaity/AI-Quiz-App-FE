@@ -77,7 +77,7 @@ export class QuizMasterComponent implements OnInit, OnDestroy {
     });
   }
 
-  nextQuestion() {
+  finishQuestion() {
     if (!this.session) return;
     this.api.nextQuestion(this.session.sessionId).subscribe({
       next: (sess) => {

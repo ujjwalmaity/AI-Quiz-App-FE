@@ -52,30 +52,9 @@
 
         <div *ngIf="session.status === 'IN_PROGRESS'" class="space-y-3">
           <div class="flex items-center justify-between">
-            <div class="font-medium">
-              Question {{ session.currentQuestionIndex + 1 }} of {{ session.questions.length }}
-            </div>
-            <button class="btn-secondary" (click)="nextQuestion()">
-              Next Question
+            <button class="btn-secondary" (click)="finishQuestion()">
+              Finish Quiz
             </button>
-          </div>
-
-          <div *ngIf="currentQuestion" class="question-card">
-            <div class="text-sm uppercase tracking-wide text-[var(--text-muted)] mb-1">
-              {{ currentQuestion.type === 'MCQ' ? 'Multiple Choice' : 'True / False' }}
-            </div>
-            <div class="font-medium mb-2">
-              {{ currentQuestion.text }}
-            </div>
-            <ul class="list-disc list-inside text-sm space-y-1">
-              <li *ngFor="let opt of currentQuestion.options; index as i">
-                {{ 'ABCD'[i] || '' }}. {{ opt }}
-              </li>
-            </ul>
-          </div>
-
-          <div class="text-sm text-[var(--text-muted)]">
-            {{ answeredCount }} of {{ session.participants.length }} participants have submitted.
           </div>
         </div>
 
@@ -103,13 +82,14 @@
                 </td>
                 <td class="td text-left">{{ p.name }}</td>
                 <td class="td text-center">{{ p.score }}</td>
-                <td class="td text-center">{{ p.correctCount }}/10</td>
+                <td class="td text-center">{{ p.correctCount }}/{{ session.questions.length }}</td>
               </tr>
             </tbody>
           </table>
 
           <p class="text-xs text-[var(--text-muted)] mt-2">
-            Max possible score: 100 points (10 questions × 10 points).
+            Max possible score: {{ session.questions.length * 10 }} points ( {{session.questions.length}} questions × 10
+            points).
           </p>
         </div>
       </div>

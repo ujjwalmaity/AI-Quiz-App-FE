@@ -21,10 +21,9 @@ export class ParticipantComponent implements OnInit, OnDestroy {
   error: string | null = null;
   submitting = false;
 
+  currentQuestionIndex = 0;
+
   // Timer per question
-  questionDurationSeconds = 30;
-  remainingSeconds = this.questionDurationSeconds;
-  private timerIntervalId: any;
   private pollIntervalId: any;
   private lastQuestionId: string | null = null;
 
@@ -39,12 +38,15 @@ export class ParticipantComponent implements OnInit, OnDestroy {
     if (stored) {
       this.participant = JSON.parse(stored);
     }
+    const storedQuestionIndex = localStorage.getItem(this.localStorageKeyQuestionIndex);
+    if (storedQuestionIndex) {
+      this.currentQuestionIndex = Number(storedQuestionIndex);
+    }
     this.loadSession();
     this.startPolling();
   }
 
   ngOnDestroy(): void {
-    if (this.timerIntervalId) clearInterval(this.timerIntervalId);
     if (this.pollIntervalId) clearInterval(this.pollIntervalId);
   }
 
@@ -52,10 +54,17 @@ export class ParticipantComponent implements OnInit, OnDestroy {
     return `ai-quiz-participant-${this.sessionId}`;
   }
 
+  get localStorageKeyQuestionIndex() {
+    return `ai-quiz-participant-${this.sessionId}-qIndex`;
+  }
+
   loadSession() {
     this.api.getSession(this.sessionId).subscribe({
       next: (session) => {
         this.session = session;
+        if (this.currentQuestionIndex === this.session.questions.length) {
+          this.session.status = "FINISHED";
+        }
         this.syncTimerWithQuestion();
       },
       error: (err) => {
@@ -94,8 +103,8 @@ export class ParticipantComponent implements OnInit, OnDestroy {
 
   get currentQuestion() {
     if (!this.session) return null;
-    if (this.session.currentQuestionIndex < 0) return null;
-    return this.session.questions[this.session.currentQuestionIndex];
+    if (this.currentQuestionIndex < 0) return null;
+    return this.session.questions[this.currentQuestionIndex];
   }
 
   hasAnsweredCurrentQuestion(): boolean {
@@ -108,14 +117,13 @@ export class ParticipantComponent implements OnInit, OnDestroy {
       this.participant &&
       this.session.status === 'IN_PROGRESS' &&
       this.currentQuestion &&
-      !this.hasAnsweredCurrentQuestion() &&
-      this.remainingSeconds > 0);
+      !this.hasAnsweredCurrentQuestion());
   }
 
   submitAnswer(optionIndex: number) {
     if (!this.session || !this.participant || !this.canAnswer()) return;
     this.submitting = true;
-    this.api.submitAnswer(this.session.sessionId, this.participant.id, optionIndex).subscribe({
+    this.api.submitAnswer(this.session.sessionId, this.participant.id, optionIndex, this.currentQuestionIndex).subscribe({
       next: (res) => {
         // update local participant state
         if (this.currentQuestion) {
@@ -127,6 +135,7 @@ export class ParticipantComponent implements OnInit, OnDestroy {
           this.participant!.score = res.score;
           localStorage.setItem(this.localStorageKey, JSON.stringify(this.participant));
         }
+        this.nextQuestion();
         this.submitting = false;
       },
       error: (err) => {
@@ -138,36 +147,27 @@ export class ParticipantComponent implements OnInit, OnDestroy {
 
   private syncTimerWithQuestion() {
     if (!this.session || this.session.status !== 'IN_PROGRESS' || !this.currentQuestion) {
-      this.stopTimer();
       return;
     }
     const qId = this.currentQuestion.id;
     if (qId !== this.lastQuestionId) {
       this.lastQuestionId = qId;
-      this.resetTimer();
     }
   }
 
-  private resetTimer() {
-    this.remainingSeconds = this.questionDurationSeconds;
-    this.stopTimer();
-    this.timerIntervalId = setInterval(() => {
-      this.remainingSeconds -= 1;
-      if (this.remainingSeconds <= 0) {
-        this.remainingSeconds = 0;
-        this.stopTimer();
-      }
-    }, 1000);
-  }
-
-  private stopTimer() {
-    if (this.timerIntervalId) {
-      clearInterval(this.timerIntervalId);
-      this.timerIntervalId = null;
+  nextQuestion() {
+    if (!this.session) return;
+    if (this.session.status === 'FINISHED') {
+      return;
     }
+
+    if (this.currentQuestionIndex < this.session.questions.length - 1) {
+      this.currentQuestionIndex++;
+    } else {
+      this.currentQuestionIndex++;
+      this.session.status = "FINISHED";
+    }
+    localStorage.setItem(this.localStorageKeyQuestionIndex, this.currentQuestionIndex.toString());
   }
 
-  get progressPercent(): number {
-    return (this.remainingSeconds / this.questionDurationSeconds) * 100;
-  }
 }
