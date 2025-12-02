@@ -48,4 +48,12 @@ export class ApiService {
   getLeaderboardCsvUrl(sessionId: string): string {
     return `${this.baseUrl}/sessions/${sessionId}/leaderboard.csv`;
   }
+
+  submitAllAnswers(sessionId: string, participantId: string, answers: any[]) {
+    return this.http.post<{ score: number; correctCount: number }>(
+        `${this.baseUrl}/sessions/${sessionId}/participants/${participantId}/submit-all`,
+        { answers }
+    );
+  }
+
 }

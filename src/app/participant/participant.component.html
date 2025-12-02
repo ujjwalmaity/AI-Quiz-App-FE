@@ -1,88 +1,73 @@
-<div class="max-w-xl mx-auto px-4 py-6">
-  <div class="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-4 shadow-sm">
-    <h2 class="text-lg font-semibold mb-2">Join AI Quiz</h2>
-    <p class="text-xs text-[var(--text-muted)] mb-3">
-      Session ID: <span class="font-mono font-medium">{{ sessionId }}</span>
-    </p>
+<div class="mobile-card">
 
-    <div *ngIf="error" class="text-red-600 text-sm mb-2">{{ error }}</div>
+  <h2 class="text-center mb-2">🧠 AI Quiz</h2>
+  <p class="text-xs text-center mb-3">
+    Session ID: {{ sessionId }}
+  </p>
 
-    <!-- Join screen -->
-    <div *ngIf="!participant">
-      <div>
-        <label class="block text-sm mb-1">Enter your name</label>
-      </div>
-      <input type="text" [(ngModel)]="name"
-        class="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-sm mb-3 me-2" placeholder="Your name" />
-      <button class="btn-primary w-full" (click)="join()" [disabled]="loading">
-        {{ loading ? 'Joining…' : 'Join Quiz' }}
-      </button>
-    </div>
-
-    <!-- After joined -->
-    <div *ngIf="participant">
-      <p class="text-sm mb-3">
-        Hi, <span class="font-medium">{{ participant.name }}</span>!
-      </p>
-
-      <ng-container *ngIf="session">
-        <!-- Waiting screen -->
-        <div *ngIf="session.status === 'NOT_STARTED'">
-          <p class="text-sm text-[var(--text-muted)] mb-2">
-            Waiting for the quiz to start…
-          </p>
-          <button class="btn-secondary" (click)="loadSession()">Refresh</button>
-        </div>
-
-        <!-- In-progress -->
-        <div *ngIf="session.status === 'IN_PROGRESS' && currentQuestion" class="space-y-3">
-          <div class="flex items-center justify-between mb-1">
-            <div class="text-sm font-medium">
-              Question {{ session.currentQuestionIndex + 1 }} of {{ session.questions.length }}
-            </div>
-            <div class="text-xs text-[var(--text-muted)]">
-              Time left: {{ remainingSeconds }}s
-            </div>
-          </div>
-
-          <div class="timer-bar">
-            <div class="timer-bar-fill" [style.width.%]="progressPercent"></div>
-          </div>
-
-          <div class="text-sm uppercase tracking-wide text-[var(--text-muted)]">
-            {{ currentQuestion.type === 'MCQ' ? 'Multiple Choice' : 'True / False' }}
-          </div>
-          <div class="font-medium mb-2">
-            {{ currentQuestion.text }}
-          </div>
-
-          <div *ngIf="hasAnsweredCurrentQuestion()" class="text-sm text-[var(--text-muted)]">
-            Answer submitted. Please wait for the next question.
-          </div>
-
-          <div class="space-y-2" *ngIf="!hasAnsweredCurrentQuestion()">
-            <button *ngFor="let opt of currentQuestion.options; index as i" class="answer-btn w-full"
-              (click)="submitAnswer(i)" [disabled]="!canAnswer() || submitting">
-              {{ opt }}
-            </button>
-
-            <div *ngIf="remainingSeconds === 0" class="text-xs text-[var(--text-muted)]">
-              Time is up for this question. Wait for the quiz master to move on.
-            </div>
-          </div>
-        </div>
-
-        <!-- Finished -->
-        <div *ngIf="session.status === 'FINISHED'" class="space-y-2">
-          <div class="font-semibold text-base">Quiz completed!</div>
-          <div class="text-sm">
-            Your score: <span class="font-medium">{{ participant.score }}</span> points.
-          </div>
-          <div class="text-xs text-[var(--text-muted)]">
-            Please check the main screen for the full results and leaderboard.
-          </div>
-        </div>
-      </ng-container>
-    </div>
+  <div *ngIf="error" class="text-center text-red-600 mb-2">
+    {{ error }}
   </div>
+
+  <!-- ✅ JOIN SCREEN -->
+  <div *ngIf="!participant">
+    <input
+        type="text"
+        [(ngModel)]="name"
+        placeholder="Enter your name"
+        class="w-full p-2 mb-2 border rounded-lg"
+    />
+
+    <button class="btn-primary w-full" (click)="join()" [disabled]="loading">
+      {{ loading ? 'Joining...' : 'Join Quiz' }}
+    </button>
+  </div>
+
+  <!-- ✅ WAITING SCREEN -->
+  <div *ngIf="participant && session?.status === 'NOT_STARTED'">
+    <p class="text-center mt-4">Waiting for the quiz to start…</p>
+  </div>
+
+  <!-- ✅ QUIZ IN PROGRESS (ALL 10 QUESTIONS + 5 MIN TIMER) -->
+  <div *ngIf="participant && session?.status === 'IN_PROGRESS' && !hasSubmitted">
+
+    <div class="timer-bar mb-1">
+      <div class="timer-bar-fill" [style.width.%]="progressPercent"></div>
+    </div>
+
+    <div class="text-xs text-center mb-3">
+      Time Remaining: {{ remainingSeconds }} seconds
+    </div>
+
+    <div *ngFor="let q of session?.questions" class="mobile-card mb-3">
+
+      <div class="font-medium mb-2">
+        {{ q.text }}
+      </div>
+
+      <button
+          *ngFor="let opt of q.options; index as i"
+          class="answer-btn mb-2"
+          (click)="selectAnswer(q.id, i)"
+          [disabled]="hasSubmitted"
+          [style.background]="selectedAnswers[q.id] === i ? '#c7d2fe' : ''"
+      >
+        {{ opt }}
+      </button>
+
+    </div>
+
+    <button class="btn-primary w-full mt-3" (click)="submitQuiz()">
+      Submit Quiz
+    </button>
+  </div>
+
+  <!-- ✅ SUBMITTED SCREEN -->
+  <div *ngIf="hasSubmitted" class="text-center mt-4">
+    ✅ Quiz submitted successfully!
+    <p class="mt-2 font-semibold">
+      Your Score: {{ participant?.score }}
+    </p>
+  </div>
+
 </div>
