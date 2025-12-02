@@ -4,7 +4,10 @@
   "private": true,
   "scripts": {
     "start": "ng serve",
-    "build": "ng build"
+    "build": "ng build",
+    "ng-build": "ng build --configuration production",
+    "prod-start": "node server.js",
+    "cloud-run-deploy": "npm run ng-build && npm run prod-start"
   },
   "dependencies": {
     "@angular/animations": "^17.3.0",
