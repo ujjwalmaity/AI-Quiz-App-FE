@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "ng serve",
-    "build": "ng build"
+    "build": "ng build",
+    "ng-build-gh": "ng build --configuration production --base-href=https://vasikaranvk.github.io/AI-Quiz-App-FE"
   },
   "dependencies": {
     "@angular/animations": "^17.3.0",
