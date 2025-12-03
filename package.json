@@ -5,8 +5,7 @@
   "scripts": {
     "start": "ng serve",
     "build": "ng build",
-    "ng-build": "ng build --configuration production",
-    "ng-deploy": "ng deploy --base-href=/AI-Quiz-App-FE/"
+    "ng-build": "ng build --configuration production"
   },
   "dependencies": {
     "@angular/animations": "^17.3.0",
@@ -17,7 +16,6 @@
     "@angular/platform-browser": "^17.3.0",
     "@angular/platform-browser-dynamic": "^17.3.0",
     "@angular/router": "^17.3.0",
-    "angular-cli-ghpages": "^2.0.3",
     "bootstrap": "^5.3.8",
     "rxjs": "~7.8.0",
     "tslib": "^2.6.2",
