@@ -11,7 +11,10 @@
     <ng-container *ngIf="session">
       <div class="text-sm space-y-1 mb-4">
         <div><span class="font-medium">Session ID:</span> {{ session.sessionId }}</div>
-        <div><span class="font-medium">Join URL:</span> {{ joinUrl }}</div>
+        <div>
+          <span class="font-medium">Join URL: </span>
+          <a [href]="joinUrl" target="_blank">{{ joinUrl }}</a>
+        </div>
         <div><span class="font-medium">Participants Joined:</span> {{ session.participants.length }}</div>
       </div>
 
